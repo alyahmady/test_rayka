@@ -1,0 +1,112 @@
+{
+	"info": {
+		"_postman_id": "8ef7bd63-d9d4-47a3-ae67-be444d38aeab",
+		"name": "Rayka Test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19857456",
+		"_collection_link": "https://pejvak.postman.co/workspace/Datawarehouse~5a18b464-4cdf-4138-a121-3788e57f5220/collection/19857456-8ef7bd63-d9d4-47a3-ae67-be444d38aeab?action=share&creator=19857456&source=collection_link"
+	},
+	"item": [
+		{
+			"name": "Get Device",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{server}}/api/devices/:device_id",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"api",
+						"devices",
+						":device_id"
+					],
+					"variable": [
+						{
+							"key": "device_id",
+							"value": "63e0984f-4b3a-11ee-9131-010101010000",
+							"description": "UUID"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Device",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"63e0984f-4b3a-11ee-9131-010101010000\",\r\n    \"deviceModel\": \"5c24f5f6-4b3e-11ee-aa3a-010101010000\",\r\n    \"name\": \"Product1\",\r\n    \"note\": \"This is a Product\",\r\n    \"serial\": \"A000000001\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{server}}/api/devices/",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"api",
+						"devices",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create 10 Fake Device Models",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{server}}/api/devices/create-fake-models/",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"api",
+						"devices",
+						"create-fake-models",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "server",
+			"value": "http://localhost:8000",
+			"type": "string"
+		}
+	]
+}

@@ -14,12 +14,7 @@ class DynamoDBClient:
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(DynamoDBClient, cls).__new__(cls)
-            cls._instance = boto3.client(
-                "dynamodb",
-                aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-                aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
-                region_name=settings.AWS_REGION_NAME,
-            )
+            cls._instance = boto3.client("dynamodb")
         return cls._instance
 
 
@@ -29,12 +24,7 @@ class DynamoDBResource:
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(DynamoDBResource, cls).__new__(cls)
-            cls._instance = boto3.resource(
-                "dynamodb",
-                aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-                aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
-                region_name=settings.AWS_REGION_NAME,
-            )
+            cls._instance = boto3.resource("dynamodb")
         return cls._instance
 
 

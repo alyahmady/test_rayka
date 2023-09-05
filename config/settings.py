@@ -183,11 +183,6 @@ API_PREFIX = env.str("API_PREFIX", "api").strip("/ ")
 assert API_PREFIX, "`API_PREFIX` is required"
 
 
-AWS_REGION_NAME = env.str("AWS_REGION_NAME")
-
-AWS_ACCESS_KEY_ID = env.str("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = env.str("AWS_SECRET_ACCESS_KEY")
-
 PROJECT_KEY = env.str("PROJECT_KEY", "rayka_test")
 
 REST_FRAMEWORK = {

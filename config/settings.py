@@ -68,10 +68,6 @@ CSRF_TRUSTED_ORIGINS = list(
     )
 )
 
-CORS_ALLOWED_ORIGINS = [f"{BASE_URL_SCHEME}://{BASE_URL_NETLOC}", FRONT_URL]
-CORS_ALLOW_CREDENTIALS = env.bool("CORS_ALLOW_CREDENTIALS", True)
-CORS_ALLOW_ALL_ORIGINS = env.bool("CORS_ALLOW_ALL_ORIGINS", False)
-
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -81,7 +77,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # 3rd party
-    "corsheaders",
     "rest_framework",
     # local
     "apps.devices.apps.DevicesConfig",
@@ -90,7 +85,6 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",

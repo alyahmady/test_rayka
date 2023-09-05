@@ -5,4 +5,4 @@ django-environ~=0.11.2
 # It can be separated in two files: requirements/dev.txt and requirements/prod.txt (-r base.txt)
 boto3-stubs-lite[essential]~=1.28.40
 
-zappa~=0.57.0
+boto3~=1.28.40

@@ -63,7 +63,8 @@ assert BASE_URL_SCHEME in (
 ALLOWED_HOSTS = [BASE_URL_NETLOC.split(":")[0].strip("/:?& "), "localhost", "127.0.0.1"]
 CSRF_TRUSTED_ORIGINS = list(
     set(
-        [f"{BASE_URL_SCHEME}://{BASE_URL_NETLOC}"] + env.list("CSRF_TRUSTED_ORIGINS", [])
+        [f"{BASE_URL_SCHEME}://{BASE_URL_NETLOC}"]
+        + env.list("CSRF_TRUSTED_ORIGINS", [])
     )
 )
 
@@ -214,6 +215,7 @@ PROJECT_KEY = env.str("PROJECT_KEY", "rayka_test")
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.AllowAny",),
+    "EXCEPTION_HANDLER": "config.exceptions.custom_exception_handler",
     "DEFAULT_THROTTLE_CLASSES": (
         "rest_framework.throttling.AnonRateThrottle",
         "rest_framework.throttling.ScopedRateThrottle",

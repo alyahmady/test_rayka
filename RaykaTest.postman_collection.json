@@ -4,7 +4,7 @@
 		"name": "Rayka Test",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "19857456",
-		"_collection_link": "https://pejvak.postman.co/workspace/Datawarehouse~5a18b464-4cdf-4138-a121-3788e57f5220/collection/19857456-8ef7bd63-d9d4-47a3-ae67-be444d38aeab?action=share&creator=19857456&source=collection_link"
+		"_collection_link": "https://pejvak.postman.co/workspace/Datawarehouse~5a18b464-4cdf-4138-a121-3788e57f5220/collection/19857456-8ef7bd63-d9d4-47a3-ae67-be444d38aeab?action=share&source=collection_link&creator=19857456"
 	},
 	"item": [
 		{
@@ -13,20 +13,19 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{server}}/api/devices/:device_id",
+					"raw": "{{server}}{{prefix}}/devices/:device_id/",
 					"host": [
-						"{{server}}"
+						"{{server}}{{prefix}}"
 					],
 					"path": [
-						"api",
 						"devices",
-						":device_id"
+						":device_id",
+						""
 					],
 					"variable": [
 						{
 							"key": "device_id",
-							"value": "63e0984f-4b3a-11ee-9131-010101010000",
-							"description": "UUID"
+							"value": "2412"
 						}
 					]
 				}
@@ -40,7 +39,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"id\": \"63e0984f-4b3a-11ee-9131-010101010000\",\r\n    \"deviceModel\": \"5c24f5f6-4b3e-11ee-aa3a-010101010000\",\r\n    \"name\": \"Product1\",\r\n    \"note\": \"This is a Product\",\r\n    \"serial\": \"A000000001\"\r\n}",
+					"raw": "{\r\n    \"id\": \"/devices/id2412\",\r\n    \"deviceModel\": \"/devicemodels/id5123\",\r\n    \"name\": \"Sensor 2125134\",\r\n    \"note\": \"Testing a sensor 315134.\",\r\n    \"serial\": \"A020012103\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -48,33 +47,12 @@
 					}
 				},
 				"url": {
-					"raw": "{{server}}/api/devices/",
+					"raw": "{{server}}{{prefix}}/devices/",
 					"host": [
-						"{{server}}"
+						"{{server}}{{prefix}}"
 					],
 					"path": [
-						"api",
 						"devices",
-						""
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create 10 Fake Device Models",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"url": {
-					"raw": "{{server}}/api/devices/create-fake-models/",
-					"host": [
-						"{{server}}"
-					],
-					"path": [
-						"api",
-						"devices",
-						"create-fake-models",
 						""
 					]
 				}
@@ -106,6 +84,11 @@
 		{
 			"key": "server",
 			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "prefix",
+			"value": "/api/v1",
 			"type": "string"
 		}
 	]

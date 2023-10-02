@@ -1,12 +1,15 @@
 from django.conf import settings
-from django.contrib import admin
 from django.urls import path, include
 
 
-urlpatterns = [
-    path("admin/", admin.site.urls),
+v1_apis = [
     path(
-        f"{settings.API_PREFIX}/devices/",
+        f"{settings.API_PREFIX}/v1/devices/",
         include("apps.devices.api.v1.urls", namespace="devices-api"),
-    ),
+    )
 ]
+
+urlpatterns = []
+
+if settings.API_VERSION == "v1":
+    urlpatterns.extend(v1_apis)

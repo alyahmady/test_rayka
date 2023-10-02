@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
-from apps.devices.models import Device, DeviceModel
+from apps.devices.models import Device
 
 
 class DevicesConfig(AppConfig):
@@ -9,4 +9,3 @@ class DevicesConfig(AppConfig):
 
     def ready(self):
         Device.create_table()
-        DeviceModel.create_table()

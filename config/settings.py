@@ -6,6 +6,8 @@ env = environ.Env()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+TEST_RUNNER = "apps.devices.tests.NoDatabaseTestRunner"
+
 DEBUG = env.bool("DEBUG", None)
 
 if DEBUG is None:
@@ -19,63 +21,21 @@ if DEBUG is None:
 
     DEBUG = env.bool("DEBUG", False)
 
+TESTING = env.bool("TESTING_MODE", False)
+
+AWS_DEPLOY_REGION = env.str("AWS_DEPLOY_REGION", "eu-north-1")
 
 ADMINS = [tuple(admin.strip().split(";")) for admin in env.list("ADMINS", [])]
 
+SECRET_KEY = env.str("DJANGO_SECRET_KEY")
 
-SECRET_KEY = env.str("SECRET_KEY")
+ALLOWED_HOSTS = [f".{AWS_DEPLOY_REGION}.amazonaws.com", "localhost", "127.0.0.1"]
 
-
-FRONT_BASE_URL_NETLOC = (
-    env.str("FRONT_BASE_URL_NETLOC")
-    .replace("http://", "")
-    .replace("https://", "")
-    .strip(":/ ")
-)
-assert (
-    FRONT_BASE_URL_NETLOC
-), "`FRONT_BASE_URL_NETLOC` is required in a valid format (e.g. `raykatest.com`)"
-FRONT_BASE_URL_SCHEME = (
-    env.str("FRONT_BASE_URL_SCHEME", "https").replace("://", "").strip(":/ ")
-)
-assert FRONT_BASE_URL_SCHEME in (
-    "https",
-    "http",
-), "`FRONT_BASE_URL_SCHEME` must be either `https` or `http`"
-FRONT_URL = f"{FRONT_BASE_URL_SCHEME}://{FRONT_BASE_URL_NETLOC}"
-
-BASE_URL_NETLOC = (
-    env.str("BASE_URL_NETLOC")
-    .replace("http://", "")
-    .replace("https://", "")
-    .strip(":/ ")
-)
-assert (
-    BASE_URL_NETLOC
-), "`BASE_URL_NETLOC` is required in a valid format (e.g. `api.raykatest.com`)"
-
-BASE_URL_SCHEME = env.str("BASE_URL_SCHEME", "https").replace("://", "").strip(":/ ")
-assert BASE_URL_SCHEME in (
-    "https",
-    "http",
-), "`BASE_URL_SCHEME` must be either `https` or `http`"
-
-ALLOWED_HOSTS = [BASE_URL_NETLOC.split(":")[0].strip("/:?& "), "localhost", "127.0.0.1"]
-CSRF_TRUSTED_ORIGINS = list(
-    set(
-        [f"{BASE_URL_SCHEME}://{BASE_URL_NETLOC}"]
-        + env.list("CSRF_TRUSTED_ORIGINS", [])
-    )
-)
-
+CSRF_TRUSTED_ORIGINS = [f"https://*.{AWS_DEPLOY_REGION}.amazonaws.com"]
 
 INSTALLED_APPS = [
-    "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
-    "django.contrib.sessions",
-    "django.contrib.messages",
-    "django.contrib.staticfiles",
     # 3rd party
     "rest_framework",
     # local
@@ -84,65 +44,18 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
 
-TEMPLATES = [
-    {
-        "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
-        "APP_DIRS": True,
-        "OPTIONS": {
-            "context_processors": [
-                "django.template.context_processors.debug",
-                "django.template.context_processors.request",
-                "django.contrib.auth.context_processors.auth",
-                "django.contrib.messages.context_processors.messages",
-            ],
-        },
-    },
-]
-
-WSGI_APPLICATION = "config.wsgi.application"
-
-
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.sqlite3",
-#         "NAME": BASE_DIR / "db.sqlite3",
-#     }
-# }
-
-
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
-    },
-]
-
+WSGI_APPLICATION = env.str("WSGI_APPLICATION", "config.wsgi.application")
 
 LANGUAGE_CODE = "en-us"
-
 TIME_ZONE = env.str("TIME_ZONE", "UTC")
-
-USE_I18N = True
-
+USE_I18N = False
 USE_TZ = True
 
 LOGGER_NAME = "test_rayka_logger"
@@ -154,34 +67,29 @@ LOGGING = {
         "verbose": {
             "format": "\n\nTime: {asctime}\nFile: {pathname}\nModule: {module}"
             "\nFunction: {funcName}\nDetails: {message}\nArgs: {args}\n",
-            "style": "{"
+            "style": "{",
         }
     },
     "handlers": {
         LOGGER_NAME: {
             "level": "DEBUG",
             "class": "logging.StreamHandler",
-            "formatter": "verbose"
+            "formatter": "verbose",
         },
     },
     "loggers": {
-        LOGGER_NAME: {
-            "handlers": [LOGGER_NAME],
-            "level": "DEBUG",
-            "propagate": True
-        },
+        LOGGER_NAME: {"handlers": [LOGGER_NAME], "level": "DEBUG", "propagate": True},
     },
 }
-
-
-STATIC_URL = "static/"
-
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 API_PREFIX = env.str("API_PREFIX", "api").strip("/ ")
 assert API_PREFIX, "`API_PREFIX` is required"
 
+API_VERSION = env.str("API_VERSION", "v1").strip("/ ")
+assert (
+    API_VERSION.startswith("v") and API_VERSION[1:].isdigit()
+), "`API_VERSION` must start with `v` and be followed by a number (e.g. `v1`)"
 
 PROJECT_KEY = env.str("PROJECT_KEY", "rayka_test")
 
@@ -199,3 +107,21 @@ REST_FRAMEWORK = {
         "device_retrieve": "45/minute",
     },
 }
+
+if DEBUG:
+    for key in REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"]:
+        REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"][key] = "60/minute"
+
+
+DDB_TABLE_READ_CAPACITY_UNITS = env.int("DDB_TABLE_READ_CAPACITY_UNITS", 5)
+DDB_TABLE_WRITE_CAPACITY_UNITS = env.int("DDB_TABLE_WRITE_CAPACITY_UNITS", 5)
+
+
+if TESTING:
+    # Useless. It's just for the sake of testing.
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }

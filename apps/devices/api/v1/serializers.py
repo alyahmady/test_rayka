@@ -1,82 +1,89 @@
-import uuid
-
-from botocore.exceptions import ClientError
 from django.utils.translation import gettext_lazy as _
-from mypy_boto3_dynamodb.service_resource import Table
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
 
-from apps.devices.models import DeviceModel, Device
+from apps.devices.models import Device
 
 
 class DeviceSerializer(serializers.Serializer):
-    id = serializers.UUIDField(
-        required=False, default=uuid.uuid1, help_text=_("Device ID")
+    id = serializers.CharField(
+        max_length=20,
+        required=True,
+        allow_null=False,
+        allow_blank=False,
+        trim_whitespace=True,
+        help_text=_("Device ID: `/devices/id123`"),
     )
-    deviceModel = serializers.UUIDField(
-        required=True, help_text=_("Device Model ID")
+    deviceModel = serializers.CharField(
+        max_length=25,
+        required=True,
+        allow_null=False,
+        allow_blank=False,
+        trim_whitespace=True,
+        help_text=_("Device Model ID: `/devicemodels/id123`"),
     )
     name = serializers.CharField(
-        max_length=100, required=True, help_text=_("Device Name")
+        max_length=100,
+        required=True,
+        allow_null=False,
+        allow_blank=False,
+        trim_whitespace=True,
+        help_text=_("Device Name"),
     )
     note = serializers.CharField(
-        max_length=255,
+        max_length=300,
         required=False,
         allow_null=True,
+        allow_blank=True,
+        trim_whitespace=True,
         help_text=_("Device Note"),
     )
     serial = serializers.CharField(
-        max_length=10, required=True, help_text=_("Device Serial")
+        max_length=10,
+        required=True,
+        allow_null=False,
+        allow_blank=False,
+        trim_whitespace=True,
+        help_text=_("Device Serial"),
     )
 
-    def validate(self, attrs: dict) -> dict:
-        attrs["serial"] = attrs["serial"].strip()
-        if not attrs["serial"][0].isalpha() or not attrs["serial"][1:].isdigit():
+    def validate_serial(self, value: str) -> str:
+        if not value[0].isalpha() or not value[1:].isdigit():
             raise serializers.ValidationError(
-                {"serial": _("Serial number must be in the format of A000000001.")}
+                _("Serial number must be in the format of A000000001.")
             )
 
-        if "id" not in attrs:
-            attrs["id"] = uuid.uuid1()
+        return value
 
-        device_model_table: Table = DeviceModel()
-        device_model_id: dict = (
-            device_model_table.get_item(
-                Key={DeviceModel.id: attrs["deviceModel"].hex},
-                ProjectionExpression=DeviceModel.id,
-                ConsistentRead=False,
-                ReturnConsumedCapacity="NONE",
-            )
-            .get("Item", {})
-            .get(DeviceModel.id, None)
-        )
-        if device_model_id != attrs["deviceModel"].hex:
-            raise ValidationError({"deviceModel": _("Device Model ID does not exist.")})
-
-        return attrs
-
-    def save(self, **kwargs) -> uuid.UUID:
-        device_table: Table = Device()
-
+    def validate_id(self, value: str) -> int:
         try:
-            # TODO logging and monitoring with `ConsumedCapacity` object in response
-            device_table.put_item(
-                Item={
-                    Device.id: self.validated_data["id"].hex,
-                    Device.model_id: self.validated_data["deviceModel"].hex,
-                    Device.name: self.validated_data["name"],
-                    Device.note: self.validated_data.get("note"),
-                    Device.serial: self.validated_data["serial"],
-                },
-                ConditionExpression=f"attribute_not_exists({Device.id})",
-                ReturnValues="NONE",
-                ReturnConsumedCapacity="NONE",
-                ReturnItemCollectionMetrics="NONE",
-            )
+            assert value.startswith("/devices/id")
+            return int(value.replace("/devices/id", ""))
+        except (ValueError, AssertionError):
+            raise serializers.ValidationError(_("Device ID is not valid."))
 
-        except ClientError as exc:
-            if exc.response["Error"]["Code"] == "ConditionalCheckFailedException":
-                raise ValidationError({"id": _("Device ID already exists.")}) from exc
-            raise exc
+    def validate_deviceModel(self, value: str) -> int:
+        try:
+            assert value.startswith("/devicemodels/id")
+            return int(value.replace("/devicemodels/id", ""))
+        except (ValueError, AssertionError):
+            raise serializers.ValidationError(_("Device Model ID is not valid."))
 
-        return self.validated_data["id"]
+    def save(self, **kwargs) -> str:
+        Device.add_or_update(
+            device_id=self.validated_data["id"],
+            device_model_id=self.validated_data["deviceModel"],
+            name=self.validated_data["name"],
+            note=self.validated_data.get("note") or "",
+            serial=self.validated_data["serial"],
+        )
+
+        return f"/devices/id{self.validated_data['id']}"
+
+    def to_representation(self, instance):
+        return {
+            "id": f"/devices/id{instance['id']}",
+            "deviceModel": f"/devicemodels/id{instance['deviceModel']}",
+            "name": instance["name"],
+            "note": instance.get("note") or "",
+            "serial": instance["serial"],
+        }

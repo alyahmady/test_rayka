@@ -1,0 +1,71 @@
+service: ${env:SERVICE_NAME}
+
+plugins:
+  - serverless-dotenv-plugin
+  - serverless-prune-plugin
+  - serverless-python-requirements
+  - serverless-wsgi
+
+useDotenv: true
+
+custom:
+  dotenv:
+    logging: false
+  pythonRequirements:
+    dockerizePip: non-linux
+    zip: true
+    slim: true
+    slimPatternsAppendDefaults: true
+    strip: false
+    fileName: requirements.txt
+    useDownloadCache: false
+    useStaticCache: false
+  stage: ${env:STAGE}
+  wsgi:
+    app: ${env:WSGI_APPLICATION}
+    packRequirements: false
+  prune:
+    automatic: true
+    number: 3
+
+functions:
+  - app:
+      handler: wsgi_handler.handler
+      events:
+        - http: ANY /
+        - http: ANY /{proxy+}
+      timeout: 30
+
+provider:
+  name: aws
+  deploymentMethod: direct
+  stackName: ${env:AWS_DEPLOY_STACK_NAME}
+  region: ${env:AWS_DEPLOY_REGION}
+  runtime: python3.11
+  versionFunctions: false
+  stage: ${env:STAGE}
+  timeout: 60
+  deploymentBucket:
+    name: ${env:DEPLOYMENT_BUCKET}
+  apiGateway:
+    shouldStartNameWithService: true
+
+package:
+  individually:
+    true
+  patterns:
+    - '!.env'
+    - '!.env.example'
+    - '!.gitignore'
+    - '!package.json'
+    - '!package-lock.json'
+    - '!RaykaTest.postman_collection.json'
+    - '!README.md'
+    - '!.venv/**'
+    - '!.git/**'
+    - '!.github/**'
+    - '!.serverless/**'
+    - '!static/**'
+    - '!.cache/**'
+    - '!.pytest_cache/**'
+    - '!node_modules/**'

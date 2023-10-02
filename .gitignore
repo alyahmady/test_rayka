@@ -5,17 +5,15 @@
 mycred
 db.sqlite3
 
-deploy/config/nginx/conf.d/*
-!deploy/environments/*.env.example
-
-static
-media
-!staticfiles
-!templates
-
 *.pyc
 __pycache__
 
-postgres_data/
-redis_data/
-logs/
+node_modules
+package-lock.json
+
+.requirements.zip
+.serverless
+unzip_requirements.py
+serverless_wsgi.py
+wsgi_handler.py
+.serverless-wsgi

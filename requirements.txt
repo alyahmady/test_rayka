@@ -1,0 +1,5 @@
+Django~=4.2.4
+djangorestframework~=3.14.0
+django-environ~=0.11.2
+boto3~=1.28.57
+Werkzeug~=2.3.7

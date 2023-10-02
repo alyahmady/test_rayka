@@ -1,0 +1,95 @@
+{
+	"info": {
+		"_postman_id": "8ef7bd63-d9d4-47a3-ae67-be444d38aeab",
+		"name": "Rayka Test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19857456",
+		"_collection_link": "https://pejvak.postman.co/workspace/Datawarehouse~5a18b464-4cdf-4138-a121-3788e57f5220/collection/19857456-8ef7bd63-d9d4-47a3-ae67-be444d38aeab?action=share&source=collection_link&creator=19857456"
+	},
+	"item": [
+		{
+			"name": "Get Device",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{server}}{{prefix}}/devices/:device_id/",
+					"host": [
+						"{{server}}{{prefix}}"
+					],
+					"path": [
+						"devices",
+						":device_id",
+						""
+					],
+					"variable": [
+						{
+							"key": "device_id",
+							"value": "2412"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Device",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"/devices/id2412\",\r\n    \"deviceModel\": \"/devicemodels/id5123\",\r\n    \"name\": \"Sensor 2125134\",\r\n    \"note\": \"Testing a sensor 315134.\",\r\n    \"serial\": \"A020012103\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{server}}{{prefix}}/devices/",
+					"host": [
+						"{{server}}{{prefix}}"
+					],
+					"path": [
+						"devices",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "server",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "prefix",
+			"value": "/api/v1",
+			"type": "string"
+		}
+	]
+}

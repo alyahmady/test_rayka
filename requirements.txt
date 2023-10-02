@@ -1,8 +1,5 @@
 Django~=4.2.4
 djangorestframework~=3.14.0
 django-environ~=0.11.2
-
-# It can be separated in two files: requirements/dev.txt and requirements/prod.txt (-r base.txt)
-boto3-stubs-lite[essential]~=1.28.40
-
-boto3~=1.28.40
+boto3~=1.28.57
+Werkzeug~=2.3.7

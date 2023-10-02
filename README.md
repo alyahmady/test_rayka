@@ -9,6 +9,29 @@
 - Werkzeug >= 3 is not supported by serverless-wsgi yet, so I used Werkzeug >= 2.
 ----
 
+
+## Run test cases
+
+0- Enable testing mode by updating below variable in `.env` file:
+```shell
+TESTING_MODE=true
+```
+
+1- Run below command
+```shell
+python manage.py test
+```
+
+2- Consider that you don't need to update any environment variable. `TESTING` will be patched during tests.
+
+3- After finishing tests, you can disable testing mode by updating below variable in `.env` file:
+```shell
+TESTING_MODE=false
+```
+
+----
+
+
 ## Run (build) on AWS (Serverless)
 
 0- Create a S3 bucket for Serverless Framework (if you don't have one).
